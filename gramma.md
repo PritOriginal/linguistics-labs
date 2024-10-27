@@ -14,7 +14,9 @@
 
 ### Рассматриваемый фрагмент кода
 ```pascal
-if i MOD 2=0 THEN Z:=Z*X;
-i:=i DIY 2;
-X:=X*X*X
+Z = Z + 1;
+if Z > N then DO;
+Z = Z / N;
+PUT DATA (Z);
+end;
 ```

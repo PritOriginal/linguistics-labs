@@ -21,14 +21,14 @@ class RecursiveDescent:
                 self.cursor += 1
                 if not self.operator():
                     succeeded = False
-                print(self.lexemesMap[";"])
+                print("; -> ", self.lexemesMap[";"])
 
         return succeeded
 
-    # <оператор> -> <присваивание> / <условный оператор>
+    # <оператор> -> <присваивание> / <условный оператор> / <поместить данные>
     def operator(self) -> bool:
         succeeded = False
-        if self.assignment() or self.conditional_operator():
+        if self.assignment() or self.conditional_operator() or self.put_data():
             succeeded = True
         return succeeded
 
@@ -38,13 +38,36 @@ class RecursiveDescent:
         if self.lexemes[self.cursor] == 0:
             indent_id = self.lexemes[self.cursor + 1]
             self.cursor += 2
-            if self.lexemes[self.cursor] == self.lexemesMap[":="]:
+            if self.lexemes[self.cursor] == self.lexemesMap["="]:
                 self.cursor += 1
                 if self.arithmetic_expression():
                     succeeded = True
-                print(self.lexemesMap[":="])
-            print(f"0 {indent_id}")
+                print(self.lexemesMap["="])
+            print(f"ident -> 0 {indent_id}")
         return succeeded
+
+    # <поместить данные> -> PUT DATA (<ид>)
+    def put_data(self) -> bool:
+        succeeded = False
+        if self.lexemes[self.cursor] == self.lexemesMap["PUT"]:
+            self.cursor += 1
+            if self.lexemes[self.cursor] == self.lexemesMap["DATA"]:
+                self.cursor += 1
+                if self.lexemes[self.cursor] == self.lexemesMap["("]:
+                    self.cursor += 1
+                    if self.lexemes[self.cursor] == 0:
+                        data = self.lexemes[self.cursor + 1]
+                        self.cursor += 2
+                        if self.lexemes[self.cursor] == self.lexemesMap[")"]:
+                            self.cursor += 1
+                            succeeded = True
+                            print(f"{self.lexemes[self.cursor]} {data}")
+                        print(") -> ", self.lexemesMap[")"])
+                    print("( -> ", self.lexemesMap["("])
+                print("DATA -> ", self.lexemesMap["DATA"])
+            print("PUT -> ", self.lexemesMap["PUT"])
+        return succeeded
+
 
     # <условный оператор> -> if <условное выражение> THEN <тело условия>
     def conditional_operator(self) -> bool:
@@ -52,13 +75,12 @@ class RecursiveDescent:
         if self.lexemes[self.cursor] == self.lexemesMap["if"]:
             self.cursor += 1
             if self.conditional_expression():
-                if self.lexemes[self.cursor] == self.lexemesMap["THEN"]:
+                if self.lexemes[self.cursor] == self.lexemesMap["then"]:
                     self.cursor += 1
                     if self.condition_body():
-                        # self.cursor = + 1
                         succeeded = True
-                    print(self.lexemesMap["THEN"])
-            print(self.lexemesMap["if"])
+                    print("then -> ", self.lexemesMap["then"])
+            print("if -> ", self.lexemesMap["if"])
         return succeeded
 
     # <условное выражение> -> <арифмитическое выражение> < / > / >= / <= / = / != <арифмитическое выражение>
@@ -78,19 +100,22 @@ class RecursiveDescent:
                 print(current_lexeme)
         return succeeded
 
-    # <тело условия> -> <оператор> / begin <раздел операторов> end
+    # <тело условия> -> <оператор> / DO ; <раздел операторов> end
     def condition_body(self) -> bool:
         succeeded = False
         if self.operator():
             succeeded = True
-        elif self.lexemes[self.cursor] == self.lexemesMap["begin"]:
+        elif self.lexemes[self.cursor] == self.lexemesMap["DO"]:
             self.cursor += 1
-            if self.operators_section():
-                if self.lexemes[self.cursor] == self.lexemesMap["end"]:
-                    self.cursor += 1
-                    succeeded = True
-                    print(self.lexemesMap["end"])
-            print(self.lexemesMap["begin"])
+            if self.lexemes[self.cursor] == self.lexemesMap[";"]:
+                self.cursor += 1
+                if self.operators_section():
+                    if self.lexemes[self.cursor] == self.lexemesMap["end"]:
+                        self.cursor += 1
+                        succeeded = True
+                        print(self.lexemesMap["end"])
+                print("; -> ", self.lexemesMap[";"])
+            print("DO -> ", self.lexemesMap["DO"])
 
         return succeeded
 
@@ -108,15 +133,13 @@ class RecursiveDescent:
                 print(current_lexeme)
         return succeeded
 
-    # <слагаемое> -> <значение> {* <значение>} {DIV <значение>} {MOD <значение>} {DIY <значение>}
+    # <слагаемое> -> <значение> {* <значение>} {/ <значение>}
     def summand(self) -> bool:
         succeeded = False
         if self.value():
             succeeded = True
             while (self.lexemes[self.cursor] == self.lexemesMap["*"] or
-                   self.lexemes[self.cursor] == self.lexemesMap["DIV"] or
-                   self.lexemes[self.cursor] == self.lexemesMap["MOD"] or
-                   self.lexemes[self.cursor] == self.lexemesMap["DIY"]):
+                   self.lexemes[self.cursor] == self.lexemesMap["/"]):
                 current_lexeme = self.lexemes[self.cursor]
                 self.cursor += 1
                 if not self.value():
@@ -138,7 +161,7 @@ class RecursiveDescent:
                 if self.lexemes[self.cursor] == self.lexemesMap[")"]:
                     self.cursor += 1
                     succeeded = True
-                    print(self.lexemesMap[")"])
-            print(self.lexemesMap["("])
+                    print(") -> ", self.lexemesMap[")"])
+            print("( -> ", self.lexemesMap["("])
 
         return succeeded
