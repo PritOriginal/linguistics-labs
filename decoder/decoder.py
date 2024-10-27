@@ -46,10 +46,6 @@ class Decoder:
     def set_output(self, path: str) -> None:
         self.output_path = path
 
-    def cut(self):
-    # def set_lexemes(self):
-    #     pass
-
     def cut(self) -> None:
         self.wasCut = True
         self.buf = self.buf[-1]
