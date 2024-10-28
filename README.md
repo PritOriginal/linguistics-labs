@@ -1,4 +1,5 @@
-# linguistic-labs
+# linguistics-labs
+[![wakatime](https://wakatime.com/badge/user/b2a0c08d-61f2-4144-ba78-aab13a59cb9f/project/2f4c046e-8630-4b0e-9792-b646bc98534c.svg)](https://wakatime.com/badge/user/b2a0c08d-61f2-4144-ba78-aab13a59cb9f/project/2f4c046e-8630-4b0e-9792-b646bc98534c)
 
 Лабораторные работы по предмету "Лингвистические средства вычислительных систем" кафедры "САПР" в Тамбовском государственном техническом университете
 
