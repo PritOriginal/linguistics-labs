@@ -1,6 +1,10 @@
+from typing import List
+
+
 class RecursiveDescent:
-    def __init__(self, lexemes, lexemesMap, identifiersMap):
+    def __init__(self, lexemes: List, lexemesMap, identifiersMap):
         self.lexemes = lexemes
+        self.lexemes.append(0)
         self.lexemesMap = lexemesMap
         self.identifiersMap = identifiersMap
 
@@ -17,11 +21,11 @@ class RecursiveDescent:
         succeeded = False
         if self.operator():
             while self.lexemes[self.cursor] == self.lexemesMap[";"]:
+                print(self.lexemes[self.cursor])
                 succeeded = True
                 self.cursor += 1
                 if not self.operator():
                     succeeded = False
-                print("; -> ", self.lexemesMap[";"])
 
         return succeeded
 
@@ -35,15 +39,15 @@ class RecursiveDescent:
     # <присваивание> -> ид := <арифмитическое выражение>
     def assignment(self) -> bool:
         succeeded = False
-        if self.lexemes[self.cursor] == 0:
-            indent_id = self.lexemes[self.cursor + 1]
-            self.cursor += 2
+        if type(self.lexemes[self.cursor]) is list and self.lexemes[self.cursor][0] == 0:
+            indent_id = self.lexemes[self.cursor][1]
+            print(f"0 {indent_id}")
+            self.cursor += 1
             if self.lexemes[self.cursor] == self.lexemesMap["="]:
+                print(self.lexemes[self.cursor])
                 self.cursor += 1
                 if self.arithmetic_expression():
                     succeeded = True
-                print(self.lexemesMap["="])
-            print(f"ident -> 0 {indent_id}")
         return succeeded
 
     # <поместить данные> -> PUT DATA (<ид>)
@@ -73,14 +77,14 @@ class RecursiveDescent:
     def conditional_operator(self) -> bool:
         succeeded = False
         if self.lexemes[self.cursor] == self.lexemesMap["if"]:
+            print(self.lexemes[self.cursor])
             self.cursor += 1
             if self.conditional_expression():
                 if self.lexemes[self.cursor] == self.lexemesMap["then"]:
+                    print(self.lexemes[self.cursor])
                     self.cursor += 1
                     if self.condition_body():
                         succeeded = True
-                    print("then -> ", self.lexemesMap["then"])
-            print("if -> ", self.lexemesMap["if"])
         return succeeded
 
     # <условное выражение> -> <арифмитическое выражение> < / > / >= / <= / = / != <арифмитическое выражение>
@@ -94,10 +98,10 @@ class RecursiveDescent:
                     current_lexeme == self.lexemesMap["<="] or
                     current_lexeme == self.lexemesMap["="] or
                     current_lexeme == self.lexemesMap["!="]):
+                print(self.lexemes[self.cursor])
                 self.cursor += 1
                 if self.arithmetic_expression():
                     succeeded = True
-                print(current_lexeme)
         return succeeded
 
     # <тело условия> -> <оператор> / DO ; <раздел операторов> end
@@ -106,17 +110,16 @@ class RecursiveDescent:
         if self.operator():
             succeeded = True
         elif self.lexemes[self.cursor] == self.lexemesMap["DO"]:
+            print(self.lexemes[self.cursor])
             self.cursor += 1
             if self.lexemes[self.cursor] == self.lexemesMap[";"]:
+                print(self.lexemes[self.cursor])
                 self.cursor += 1
                 if self.operators_section():
                     if self.lexemes[self.cursor] == self.lexemesMap["end"]:
+                        print(self.lexemesMap["end"])
                         self.cursor += 1
                         succeeded = True
-                        print(self.lexemesMap["end"])
-                print("; -> ", self.lexemesMap[";"])
-            print("DO -> ", self.lexemesMap["DO"])
-
         return succeeded
 
     # <арифмитическое выражение> -> <слагаемое> {+ <слагаемое>} {- <слагаемое>}
@@ -126,11 +129,10 @@ class RecursiveDescent:
             succeeded = True
             while (self.lexemes[self.cursor] == self.lexemesMap["+"] or
                    self.lexemes[self.cursor] == self.lexemesMap["-"]):
-                current_lexeme = self.lexemes[self.cursor]
+                print(self.lexemes[self.cursor])
                 self.cursor += 1
                 if not self.summand():
                     succeeded = False
-                print(current_lexeme)
         return succeeded
 
     # <слагаемое> -> <значение> {* <значение>} {/ <значение>}
@@ -140,28 +142,26 @@ class RecursiveDescent:
             succeeded = True
             while (self.lexemes[self.cursor] == self.lexemesMap["*"] or
                    self.lexemes[self.cursor] == self.lexemesMap["/"]):
-                current_lexeme = self.lexemes[self.cursor]
+                print(self.lexemes[self.cursor])
                 self.cursor += 1
                 if not self.value():
                     succeeded = False
-                print(current_lexeme)
         return succeeded
 
     # <значение>: <значение> -> ид / конст / ( <арифметическое выражение> )
     def value(self) -> bool:
         succeeded = False
-        if self.lexemes[self.cursor] == 0 or self.lexemes[self.cursor] == 1:
-            data = self.lexemes[self.cursor + 1]
-            print(f"{self.lexemes[self.cursor]} {data}")
-            self.cursor += 2
+        if type(self.lexemes[self.cursor]) is list:
+            data = self.lexemes[self.cursor][1]
+            print(f"{self.lexemes[self.cursor][0]} {data}")
+            self.cursor += 1
             succeeded = True
         elif self.lexemes[self.cursor] == self.lexemesMap["("]:
+            print(self.lexemes[self.cursor])
             self.cursor += 1
             if self.arithmetic_expression():
                 if self.lexemes[self.cursor] == self.lexemesMap[")"]:
+                    print(self.lexemes[self.cursor])
                     self.cursor += 1
                     succeeded = True
-                    print(") -> ", self.lexemesMap[")"])
-            print("( -> ", self.lexemesMap["("])
-
         return succeeded

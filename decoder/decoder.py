@@ -26,10 +26,7 @@ class Decoder:
         "end"
     ]
 
-    def __init__(self, input_path: str, output_path: str):
-        self.input_path = input_path
-        self.output_path = output_path
-
+    def __init__(self):
         self.wasCut = False
         self.buf = ""
         self.isLexeme = True
@@ -50,10 +47,7 @@ class Decoder:
     def set_output(self, path: str) -> None:
         self.output_path = path
 
-    # def set_lexemes(self):
-    #     pass
-
-    def cut(self) -> None:
+    def cut(self):
         self.wasCut = True
         self.buf = self.buf[-1]
         self.isLexeme = True
@@ -140,16 +134,14 @@ class Decoder:
                         # Константа
                         elif self.const != "":
                             f_output.write(f"1 {self.const} ")
-                            self.parseLexemes.append(1)
-                            self.parseLexemes.append(int(self.const))
+                            self.parseLexemes.append([1, int(self.const)])
                             reset()
                             self.cut()
                         # Идентификатор
                         elif self.ident != "":
                             self.add_ident(self.ident)
                             f_output.write(f'0 {self.identifiersMap[self.ident]} ')
-                            self.parseLexemes.append(0)
-                            self.parseLexemes.append(self.identifiersMap[self.ident])
+                            self.parseLexemes.append([0, self.identifiersMap[self.ident]])
                             reset()
                             self.cut()
                         else:
@@ -160,7 +152,7 @@ class Decoder:
                                 self.cut()
                     elif self.wasCut:
                         self.wasCut = False
-        self.parseLexemes.append(0)
+        # self.parseLexemes.append(0)
 
     def recursive_descent(self) -> None:
         rec_des = RecursiveDescent(lexemes=self.parseLexemes, lexemesMap=self.lexemesMap, identifiersMap=self.identifiersMap)
@@ -168,3 +160,4 @@ class Decoder:
 
     def operator_precedence(self) -> None:
         oper_prec = OperatorPrecedence(lexemes=self.parseLexemes, lexemesMap=self.lexemesMap, identifiersMap=self.identifiersMap)
+        oper_prec.disassemble()
