@@ -20,12 +20,16 @@ class RecursiveDescent:
     def operators_section(self) -> bool:
         succeeded = False
         if self.operator():
-            while self.lexemes[self.cursor] == self.lexemesMap[";"]:
+            while (self.lexemes[self.cursor] == self.lexemesMap[";"]):
                 print(self.lexemes[self.cursor])
                 succeeded = True
+                if (self.lexemes[self.cursor + 1] == 0 or
+                    self.lexemes[self.cursor + 1] == self.lexemesMap["end"]):
+                    break
                 self.cursor += 1
                 if not self.operator():
                     succeeded = False
+            self.cursor += 1
 
         return succeeded
 
@@ -54,26 +58,26 @@ class RecursiveDescent:
     def put_data(self) -> bool:
         succeeded = False
         if self.lexemes[self.cursor] == self.lexemesMap["PUT"]:
+            print(self.lexemes[self.cursor])
             self.cursor += 1
             if self.lexemes[self.cursor] == self.lexemesMap["DATA"]:
+                print(self.lexemes[self.cursor])
                 self.cursor += 1
                 if self.lexemes[self.cursor] == self.lexemesMap["("]:
+                    print(self.lexemes[self.cursor])
                     self.cursor += 1
-                    if self.lexemes[self.cursor] == 0:
-                        data = self.lexemes[self.cursor + 1]
-                        self.cursor += 2
+                    if type(self.lexemes[self.cursor]) is list and self.lexemes[self.cursor][0] == 0:
+                        data = self.lexemes[self.cursor][1]
+                        print(f"0 {data}")
+                        self.cursor += 1
                         if self.lexemes[self.cursor] == self.lexemesMap[")"]:
+                            print(self.lexemes[self.cursor])
                             self.cursor += 1
                             succeeded = True
-                            print(f"{self.lexemes[self.cursor]} {data}")
-                        print(") -> ", self.lexemesMap[")"])
-                    print("( -> ", self.lexemesMap["("])
-                print("DATA -> ", self.lexemesMap["DATA"])
-            print("PUT -> ", self.lexemesMap["PUT"])
         return succeeded
 
 
-    # <условный оператор> -> if <условное выражение> THEN <тело условия>
+    # <условный оператор> -> if <условное выражение> then <тело условия>
     def conditional_operator(self) -> bool:
         succeeded = False
         if self.lexemes[self.cursor] == self.lexemesMap["if"]:

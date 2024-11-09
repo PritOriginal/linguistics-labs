@@ -26,7 +26,10 @@ class Decoder:
         "end"
     ]
 
-    def __init__(self):
+    def __init__(self, input_path: str, output_path: str):
+        self.input_path = input_path
+        self.output_path = output_path
+
         self.wasCut = False
         self.buf = ""
         self.isLexeme = True
