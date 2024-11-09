@@ -1,6 +1,10 @@
+from typing import List
+
+
 class RecursiveDescent:
-    def __init__(self, lexemes, lexemesMap, identifiersMap):
+    def __init__(self, lexemes: List, lexemesMap, identifiersMap):
         self.lexemes = lexemes
+        self.lexemes.append(0)
         self.lexemesMap = lexemesMap
         self.identifiersMap = identifiersMap
 
@@ -35,10 +39,10 @@ class RecursiveDescent:
     # <присваивание> -> ид := <арифмитическое выражение>
     def assignment(self) -> bool:
         succeeded = False
-        if self.lexemes[self.cursor] == 0:
-            indent_id = self.lexemes[self.cursor + 1]
+        if type(self.lexemes[self.cursor]) is list and self.lexemes[self.cursor][0] == 0:
+            indent_id = self.lexemes[self.cursor][1]
             print(f"0 {indent_id}")
-            self.cursor += 2
+            self.cursor += 1
             if self.lexemes[self.cursor] == self.lexemesMap[":="]:
                 print(self.lexemes[self.cursor])
                 self.cursor += 1
@@ -123,10 +127,10 @@ class RecursiveDescent:
     # <значение>: <значение> -> ид / конст / ( <арифметическое выражение> )
     def value(self) -> bool:
         succeeded = False
-        if self.lexemes[self.cursor] == 0 or self.lexemes[self.cursor] == 1:
-            data = self.lexemes[self.cursor + 1]
-            print(f"{self.lexemes[self.cursor]} {data}")
-            self.cursor += 2
+        if type(self.lexemes[self.cursor]) is list:
+            data = self.lexemes[self.cursor][1]
+            print(f"{self.lexemes[self.cursor][0]} {data}")
+            self.cursor += 1
             succeeded = True
         elif self.lexemes[self.cursor] == self.lexemesMap["("]:
             print(self.lexemes[self.cursor])

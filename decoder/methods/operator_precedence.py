@@ -1,15 +1,16 @@
 class OperatorPrecedence:
-    def __init__(self, lexemes, lexemesMap, identifiersMap):
+    def __init__(self, lexemes, lexemesMap: dict, identifiersMap):
         self.lexemes = lexemes
         self.lexemesMap = lexemesMap
         self.identifiersMap = identifiersMap
 
-        self.initMatrix()
+        self.matrix = None
+        self.init_matrix()
 
-    def initMatrix(self):
+    def init_matrix(self):
         with open('gramma_operator_precedence.md', 'r', encoding='utf8') as f:
-            matrix = {}
-            header = []
+            self.matrix: dict[int, dict[int, str]] = {}
+            header: list[int] = []
             for line in f.readlines():
                 if line[0] == '|' and line[1] != ':':
                     line = line.strip()
@@ -29,8 +30,7 @@ class OperatorPrecedence:
                     else:
                         lexeme = row[0]
                         data = row[1:]
-                        # print(lexeme, data)
-                        matrix_row = {}
+                        matrix_row: dict[int, str] = {}
                         for i, l in enumerate(data):
                             if l != '':
                                 matrix_row[header[i]] = l
@@ -40,5 +40,47 @@ class OperatorPrecedence:
                             lexeme_num = 1
                         else:
                             lexeme_num = self.lexemesMap[lexeme]
-                        matrix[lexeme_num] = matrix_row
-            print(matrix)
+                        self.matrix[lexeme_num] = matrix_row
+
+    def _get_lexeme(self, i: int) -> int:
+        if type(self.lexemes[i]) is list:
+            return self.lexemes[i][0]
+        return self.lexemes[i]
+
+    def disassemble(self):
+        k = len(self.lexemes)
+        n1, n2 = 0, 0
+        while True:
+            i = 1
+            s = '<'
+            while i < k:
+                n1 = self._get_lexeme(i - 1)
+                n2 = self._get_lexeme(i)
+                s += str(n1) + self.matrix[n1][n2]
+                if self.matrix[n1][n2] == '>':
+                    break
+                i += 1
+
+            s += str(n2) + '>'
+            print(s)
+            j2 = i - 1
+            j1 = j2
+            while True:
+                j1 = j1 - 1
+                n1 = self._get_lexeme(j1)
+                n2 = self._get_lexeme(j1 + 1)
+                if j1 < 0 or self.matrix[n1][n2] == '<':
+                    break
+            for x in range(j1 + 1, i):
+                print(self.lexemes[x])
+
+            j = j1
+            for x in range(i, k):
+                j += 1
+                self.lexemes[j] = self.lexemes[x]
+                self.lexemes[j + 1] = 0
+            k -= j2 - j1
+
+            if k <= 1:
+                print(self._get_lexeme(0))
+                break
