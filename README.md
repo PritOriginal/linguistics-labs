@@ -6,14 +6,14 @@
 ---
 Реализованные лабораторные работы
 
-- [x] Лингвистический разбор - `decoder/decoder.py`
+- [x] Лексический анализ - `decoder/decoder.py`
 - [x] Метод рекурсивного спуска - `decoder/methods/recursive_descent.py`
   - [x] Грамматика
   - [x] Алгоритм
 - [x] Метод операторного предшествия `decoder/methods/operator_precedence.py`
   - [x] Грамматика
   - [x] Алгоритм
-
+- [x] Метод цепочек - `decoder/decoder.py`
 
 - `gramma.md` - грамматика в общем виде
 - `gramma_recursive_descent.md` - грамматика для метода рекурсивного спуска
